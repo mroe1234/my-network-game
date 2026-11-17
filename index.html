@@ -9,41 +9,55 @@
 <body>
   <header class="site-header">
     <h1>Capacity Flows</h1>
-    <p class="tagline">Help Bobby Bits keep the packets flowing.</p>
+    <p class="tagline">Help Bobby Bits keep the packets flowing for as long as you can.</p>
     <button type="button" id="restart" class="secondary" hidden>Restart</button>
   </header>
 
   <main id="app" tabindex="-1">
-    <!-- Loading / content-error / briefing / summary views render here. -->
+    <!-- Loading / content-error / briefing / game-over views render here. -->
     <section id="view" aria-labelledby="view-heading">
       <h2 id="view-heading">Loading…</h2>
-      <p>Loading level content.</p>
+      <p>Loading the scenario.</p>
     </section>
 
-    <!-- Round view: topology scrolls on its own; actions stay visible. -->
     <section id="round" aria-labelledby="round-heading" hidden>
-      <h2 id="round-heading">Round</h2>
-      <p id="round-intro"></p>
+      <h2 id="round-heading" class="visually-hidden">Campus network</h2>
+
+      <!-- HUD: score clock, credits, spill countdown, pause (FR-104, FR-105, FR-110, FR-121). -->
+      <div id="hud" class="hud" role="group" aria-label="Game status">
+        <div class="hud-item"><span class="hud-label">Survived</span> <span id="hud-time" role="timer" aria-live="off">0:00</span></div>
+        <div class="hud-item"><span class="hud-label">Credits</span> <span id="hud-credits">0</span> <span id="hud-income" class="muted"></span></div>
+        <div class="hud-item hud-spill" id="hud-spill-wrap"><span id="hud-spill">Healthy</span></div>
+        <button type="button" id="pause" class="pause-button">Pause (P)</button>
+      </div>
+      <p class="hud-rule" id="hud-rule"></p>
+
+      <div id="notice" class="notice" role="region" aria-label="New concept" hidden></div>
+      <p id="round-intro" class="event-line" aria-live="polite"></p>
+
       <div class="round-layout">
         <div>
           <div id="topology" class="topology" role="region" aria-label="Network topology (scrollable)" tabindex="0"></div>
+          <div id="flow-legend" class="flow-legend"></div>
           <div id="flow-static"></div>
         </div>
         <div class="side">
-          <form id="controls" aria-label="Upgrade choices"></form>
+          <section id="status" class="status" aria-live="polite" aria-label="What is spilling"></section>
+          <section id="action-card" class="action-card empty" aria-live="polite" aria-label="Selected item"></section>
+          <section id="switch-list" class="switch-list" aria-label="Switches"></section>
           <div class="actions" id="actions"></div>
           <div id="help" class="help" aria-live="polite"></div>
           <div id="progress" class="progress"></div>
         </div>
       </div>
-      <details id="topology-table-wrap" open>
+      <details id="topology-table-wrap">
         <summary>Topology as a table</summary>
         <div id="topology-table" class="table-wrap" role="region" aria-label="Topology table (scrollable)" tabindex="0"></div>
       </details>
     </section>
 
     <section id="feedback" aria-live="polite" aria-labelledby="feedback-heading" class="feedback" tabindex="-1">
-      <h2 id="feedback-heading" class="visually-hidden">Feedback</h2>
+      <h2 id="feedback-heading" class="visually-hidden">Messages</h2>
       <div id="feedback-body"></div>
     </section>
   </main>

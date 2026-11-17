@@ -1,6 +1,6 @@
 # Capacity Flows · Implementation plan
 
-> Feature-level plan (canonical): `specs/001-capacity-flows-game/plan.md`.
+> Feature-level plan (canonical): `specs/002-survival-growth/plan.md` (survival play; supersedes `specs/001-capacity-flows-game/plan.md`). Content now lives in `data/scenario.json`; the simulation is `engine/sim.js`.
 
 ## Build target
 
@@ -34,8 +34,10 @@ engine/
   state.js                   Session transitions, attempts, completion, restart
   feedback.js                Explain structured evaluation results
 ui/
-  render.js                  Briefing, challenge, feedback, and summary views
-  controls.js                Input events and keyboard/focus behavior
+  render.js                  Briefing, challenge (selectable topology, arrival queues), feedback, and summary views
+  controls.js                Input events, keyboard/focus behavior, and the action card for a selected switch
+  flow.js                    Packet animation; static view under reduced motion
+  shapes.js                  Shared glyphs: shape = device type, colour = direction, shade = link fullness
 data/
   levels.json                Briefings, challenges, hints, source records
 tests/
@@ -94,6 +96,8 @@ The state module owns attempts, assistance, completed round IDs, current round, 
 Translate packets flowing through a three-tier campus topology into a compact challenge area, labeled controls, and a persistent explanation area. Use a clear type hierarchy and one consistent visual language. Motion should reveal a consequence, such as packets spilling at a switch whose uplinks are over 80% utilized.
 
 Use native controls where possible, move focus deliberately after screen changes, and announce feedback through a live region. Respect `prefers-reduced-motion`. Display textual values alongside diagrams. A learner must not need animation, color vision, pointer precision, or hover to reason about the answer.
+
+**Change requests (2026-11-17):** diagram items are selectable (pointer or keyboard) and open an action card for that switch. Packets encode device type by shape, direction by colour (blue toward the device, purple from it) and link fullness by shade, with a text legend. Each device group shows an arrival queue of the demand about to enter the network, captioned as offered load, not buffering. Details: `specs/001-capacity-flows-game/research.md` R11–R14.
 
 ## Implementation order
 

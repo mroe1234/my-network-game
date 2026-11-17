@@ -8,12 +8,12 @@ export const CLASSES = [
 ];
 
 export const DEVICES = [
-  { id: 'dt-a', label: 'Office laptop', portMbps: 1000, upMbps: 100, downMbps: 200 },
-  { id: 'dt-a201', label: 'Laptop +1', portMbps: 1000, upMbps: 100, downMbps: 201 },
-  { id: 'dt-heavy', label: 'Video workstation', portMbps: 1000, upMbps: 300, downMbps: 400 },
-  { id: 'dt-x', label: 'Render node', portMbps: 1000, upMbps: 200, downMbps: 900 },
-  { id: 'dt-cam', label: 'Uploading camera', portMbps: 1000, upMbps: 200, downMbps: 10 },
-  { id: 'dt-mg', label: 'Wi-Fi 7 AP', portMbps: 5000, upMbps: 500, downMbps: 1000 },
+  { id: 'dt-a', label: 'Office laptop', portMbps: 1000, upMbps: 100, downMbps: 200, shape: 'square' },
+  { id: 'dt-a201', label: 'Laptop +1', portMbps: 1000, upMbps: 100, downMbps: 201, shape: 'square' },
+  { id: 'dt-heavy', label: 'Video workstation', portMbps: 1000, upMbps: 300, downMbps: 400, shape: 'triangle' },
+  { id: 'dt-x', label: 'Render node', portMbps: 1000, upMbps: 200, downMbps: 900, shape: 'hexagon' },
+  { id: 'dt-cam', label: 'Uploading camera', portMbps: 1000, upMbps: 200, downMbps: 10, shape: 'diamond' },
+  { id: 'dt-mg', label: 'Wi-Fi 7 AP', portMbps: 5000, upMbps: 500, downMbps: 1000, shape: 'circle' },
 ];
 
 export const CATALOG = { switchClasses: CLASSES, deviceTypes: DEVICES };

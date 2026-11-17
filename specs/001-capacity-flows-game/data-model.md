@@ -31,6 +31,7 @@ within their collection.
 | portMbps | int | > 0 |
 | upMbps | int | upstream (ingress → core) per device; 0 < upMbps ≤ portMbps |
 | downMbps | int | downstream (egress → device) per device; 0 < downMbps ≤ portMbps |
+| shape | `"circle"` \| `"triangle"` \| `"hexagon"` \| `"square"` \| `"diamond"` | packet/queue glyph: circle = access point, triangle = desktop/workstation, hexagon = server, square = laptop, diamond = camera |
 
 ### Level
 | Field | Type | Rules |

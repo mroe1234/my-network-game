@@ -12,6 +12,10 @@
   --warn: #8a5a00;
   --warn-bg: #fff4d6;
   --focus: #d16d00;
+  --pkt-up: #0b5cad;
+  --pkt-down: #8250df;
+  --pkt-device: #0f7b6c;
+  --pkt-spill: #c4161c;
   --radius: 8px;
   --gap: 1rem;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -34,6 +38,10 @@
     --warn: #e3b341;
     --warn-bg: #2b2210;
     --focus: #ffa657;
+    --pkt-up: #5aa9ff;
+    --pkt-down: #c297ff;
+    --pkt-device: #3fc7b0;
+    --pkt-spill: #ff6b6b;
   }
 }
 
@@ -114,8 +122,8 @@ th, td { border-bottom: 1px solid var(--border); padding: 0.3rem 0.5rem; text-al
 .link-label { font-size: 11px; fill: var(--text); }
 .link-label.muted { fill: var(--muted); }
 .link-label.planned { fill: var(--warn); font-style: italic; }
-.packet { fill: var(--accent); }
-.packet.spill { fill: var(--bad); }
+/* Packet fill is set inline: hue = direction, lightness = how full the link is (ui/shapes.js). */
+.packet { stroke: rgba(0, 0, 0, 0.35); stroke-width: 0.6; }
 .spill-label { font-size: 12px; font-weight: 700; fill: var(--bad); }
 caption { text-align: left; font-weight: 600; padding: 0.5rem 0; }
 .table-wrap table + table { margin-top: 1rem; }
@@ -131,3 +139,64 @@ select { max-width: 100%; }
 .help .hint, .help .solution { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 0.75rem; margin: 0 0 0.5rem; }
 .control, .control > * { min-width: 0; }
 .control select { width: 100%; }
+
+/* Packet legend */
+.flow-legend { font-size: 0.85rem; color: var(--muted); margin: 0.4rem 0 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 0.2rem 0.8rem; align-items: center; }
+.legend-row strong { color: var(--text); font-weight: 600; }
+.legend-item { display: inline-flex; align-items: center; gap: 0.25rem; white-space: nowrap; }
+
+/* Selectable diagram items (change request 1) */
+.selectable { cursor: pointer; }
+.selectable:hover .node { stroke: var(--accent); }
+.selectable:focus { outline: none; }
+.selectable:focus-visible .node { stroke: var(--focus); stroke-width: 3; }
+.select-ring { fill: none; stroke: var(--accent); stroke-width: 3; }
+.uplink-group { cursor: pointer; }
+.uplink-group .hit { stroke: transparent; stroke-width: 16; }
+.uplink-group.selected .link { stroke-width: 4; }
+
+/* Action card */
+.action-card { background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.action-card.empty { border: 1px dashed var(--border); padding: 0.5rem 0.75rem; }
+.action-card h3 { margin: 0 0 0.25rem; font-size: 1.05rem; outline: none; }
+.action-card h4 { margin: 0.75rem 0 0.25rem; font-size: 0.95rem; }
+.action-card p { margin: 0.2rem 0; }
+.action-card ul { margin: 0.2rem 0 0.5rem; padding-left: 1.2rem; font-size: 0.9rem; }
+.action-card label { display: block; margin-top: 0.5rem; }
+.action-card select { width: 100%; }
+.card-buttons { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+.planned-note { color: var(--warn); font-style: italic; }
+
+/* Arrival queues (change request 3) */
+.queue-icon { fill: var(--muted); }
+.queue-icon.queue-new { fill: var(--surface); stroke: var(--text); stroke-width: 1.3; stroke-dasharray: 2 1.5; }
+.queue-label { font-size: 11px; fill: var(--text); }
+.queue-new-label { fill: var(--text); font-weight: 600; }
+.queue-caption { font-size: 11px; fill: var(--muted); }
+
+/* ---- survival HUD and panels (feature 002) ---- */
+.hud { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 1rem; position: sticky; top: 0; z-index: 2; }
+.hud-item { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.hud-label { color: var(--muted); font-size: 0.85rem; margin-right: 0.25rem; }
+.hud-spill.bad { color: var(--bad); font-weight: 700; }
+.pause-button { margin-left: auto; }
+.hud-rule { color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0 0; }
+.event-line { margin: 0.5rem 0; font-style: italic; }
+.notice { background: var(--warn-bg); border: 2px solid var(--warn); border-radius: var(--radius); padding: 0.75rem 1rem; margin: 0.5rem 0; }
+.notice h3 { margin: 0 0 0.25rem; outline: none; }
+.status { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 0.75rem; }
+.status.bad { border-color: var(--bad); background: var(--bad-bg); }
+.status h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.status ul { margin: 0.2rem 0; padding-left: 1.1rem; }
+.switch-list h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.switch-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.switch-list li { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; }
+.switch-list li.bad { border-color: var(--bad); }
+.sl-name { font-weight: 600; }
+.sl-actions { display: flex; gap: 0.4rem; margin-top: 0.3rem; flex-wrap: wrap; }
+.sl-actions button, .card-buttons button { padding: 0.3rem 0.6rem; font-size: 0.9rem; }
+.link-button { background: none; border: none; color: var(--accent); text-decoration: underline; padding: 0.3rem 0.2rem; }
+.score { font-size: 1.6rem; font-weight: 700; margin: 0.25rem 0; }
+#card-replace { margin-top: 0.4rem; }
+@media (max-width: 720px) { .legend-item { white-space: normal; } }

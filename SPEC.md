@@ -56,7 +56,15 @@ Use observable verbs such as identify, calculate, order, compare, or diagnose. R
 
 Tell the learner about these boundaries in plain language. If two answers can both be valid, define how the game accepts them or remove that ambiguity from the first version.
 
-## The repeatable game loop
+## Survival play (2026-11-17, replaces rounds and levels)
+
+There are no levels. Traffic grows over time on a scripted timeline, then in endless growth
+waves. The player earns credits from delivered traffic and spends them on uplinks and switch
+classes, pausing whenever they like. If the network spills for 15 seconds in a row, the game
+ends; the score is how long the network survived. Every access switch serves at least 3
+different device types. Detailed spec: `specs/002-survival-growth/spec.md`.
+
+## The repeatable game loop (superseded by survival play; kept for history)
 
 1. **Brief:** introduce one concept, its terms, and a worked example different from the challenge.
 2. **Inspect:** show topology and packets with all decision-relevant values visible.
@@ -80,3 +88,16 @@ Tell the learner about these boundaries in plain language. If two answers can bo
 - Each round starts from the previous round's reference solution plus new devices (and possibly
   a new access switch); the player's extra upgrades are not carried forward.
 - Three levels × two rounds: link capacity → device type sizing → organic growth.
+
+## Change requests (2026-11-17)
+
+- **Act on what you click:** clicking a switch, its uplinks or its devices (or Tab + Enter)
+  opens an action card with its numbers, its devices, − / + uplink and (Levels 2–3) a switch
+  class picker. Changes are planned until Submit; nothing is graded or counted by selecting.
+- **Arrival queues:** under each device group, icons show the traffic about to hit the network
+  (demand waiting to enter), with exact figures; devices new this round are highlighted. This
+  shows offered load only; buffering is not modelled.
+- **Packet encoding:** shape = device type (circle access point, triangle desktop, hexagon
+  server, square laptop, diamond camera); colour = direction (blue toward the device, purple
+  from the device); shade = how full the link is (darker = less spare capacity, darkest at the
+  80% limit). A legend explains all three.

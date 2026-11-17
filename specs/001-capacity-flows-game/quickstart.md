@@ -40,7 +40,14 @@ is reported as a failure.
    names the bottleneck and its utilization; the round stays open; attempts = 1.
 4. Add uplinks on the bottleneck switch, then Submit → correct, the flow shows all packets
    delivered, and Next is enabled. Press Submit again → nothing changes.
-5. (SC-005) Show the explanation from step 3 to a teammate who hasn't seen the round. Pass if they
+5. Click (or Tab to and press Enter on) the Studio switch in the diagram: an action card shows
+   its values and devices. "+ uplink" plans a change (shown as "planned"; attempts unchanged).
+   Click the core: it explains that the core is fixed. Packets: shape = device type (▲
+   workstation, ● access point), colour = direction (blue toward the device, purple from it),
+   shade = how full the link is (the 84% Studio uplink is darker than aggregation at 16.4%). Under each device group an arrival queue shows
+   the demand waiting to enter; in round 2 the 20 new workstations appear as outlined ▲ labelled
+   "new this round".
+6. (SC-005) Show the explanation from step 3 to a teammate who hasn't seen the round. Pass if they
    can say, from the text alone, which switch was the bottleneck and why the chosen upgrade did
    not help. Record their answer.
 

@@ -118,3 +118,64 @@ Each item below records a decision, why it was made, and what else was considere
 - **Packet animation**: CSS/SVG animation driven by `requestAnimationFrame`. It is disabled under
   `prefers-reduced-motion: reduce`, where a static before/after utilization view is shown instead
   (FR-025).
+
+## Change requests (2026-11-17)
+
+## R11 · Acting on diagram items (FR-010a)
+
+- **Decision**: Clicking, or pressing Enter/Space on, a switch, its uplinks or its device group
+  selects that switch and opens an action card beside the diagram: committed values, devices
+  (port speed and demand), − / + uplink buttons bounded by the class maximum, and a class picker
+  only when the round allows "replace". The core opens an explanation that it is fixed.
+- **Rationale**: Players reach for the thing they are looking at. Routing the card through the
+  same `setPending` path as the drop-downs keeps one source of truth, and R8 still holds:
+  planning never recomputes utilization, grades or counts an attempt (C3). Diagram nodes are
+  real keyboard buttons, so the pointer is never required (C4).
+- **Selection is UI state, not session state**: it lives in `main.js`, resets on a new round
+  or restart, and is never part of progress.
+- **Alternatives considered**: focusing the existing drop-downs (smallest, but less direct); a
+  popover drawn inside the SVG (hard to make usable at 360 px and with screen readers).
+
+## R12 · Packet encoding: shape, colour, shade (FR-011)
+
+- **Decision**: Shape = device type (`DeviceType.shape` in data, validated); colour = direction
+  (blue hue 213 toward the device, purple hue 272 from it); shade = utilization of that link in
+  that direction, interpolated from light (0%) to darkest at the 80% limit and above
+  (`ui/shapes.js › packetFill`). Opposite lanes per direction. A mixed link allocates packet
+  shapes in proportion to each device type's share of that direction's load (largest
+  remainder, interleaved). End-user device links shade by each device's demand ÷ the port speed
+  it actually gets.
+- **Rationale**: Requested by the product owner. "Darker = less spare capacity" follows the
+  usual heat-map convention. Reaching the darkest shade at 80% ties the shade to the grading
+  rule, so a dark packet always means "at or over the limit".
+- **Red removed from packets**: colour now means direction only, so spilling is shown by motion
+  (packets peel off halfway and fade) plus the existing red dashed link and "spilling" / "port
+  too slow" text. This keeps each channel with one meaning.
+- **Accessibility (C4)**: every channel has a non-colour equivalent: shape, lane, the text
+  legend, and the numbers in the diagram, table and card.
+- **Shapes in data (C6)**: a new device type, such as a server, needs only
+  `"shape": "hexagon"` in `data/levels.json`. No server device type ships in v1.
+
+## R13 · Arrival queues (FR-011b)
+
+- **Decision**: Under each device group, a row of icons (device shapes) sized to the demand
+  waiting to enter (busier direction), with exact ↑/↓ figures as text. Devices new this round,
+  from `Round.addedDevices` or `Round.addedSwitches`, are outlined at the back of the line and
+  labelled. The scale (Mbps per icon) is the smallest of 250 / 500 / 1 000 / 2 500 / 5 000 /
+  10 000 / 25 000 that keeps the busiest group at or under 20 icons, and is stated in a caption.
+- **Rationale (C1)**: Buffering and queuing delay are excluded from the model, so the queues are
+  explicitly a picture of offered load, and the caption says so. They grow only with demand,
+  never with time, so they don't suggest a countdown (C3).
+- **Alternatives considered**: a waiting line at each uplink (would look like buffering being
+  modelled); both (too busy).
+
+## R14 · Testing animation headlessly
+
+- **Finding**: Headless Chrome on macOS has no display link (`CVDisplayLinkCreateWithCGDisplay
+  failed`), so `requestAnimationFrame` runs about one frame, and real-time timers stall. Earlier
+  "spill seen" checks passed only because a packet happened to be past halfway on that frame.
+- **Decision**: The click-through checks replace `requestAnimationFrame` in the game window and
+  step the game's own frame loop through a full 3.2 s cycle, asserting that packets move, spill
+  on overloaded links, and keep their direction colour. Watching the real-time motion remains a
+  manual check (README Verification).
+

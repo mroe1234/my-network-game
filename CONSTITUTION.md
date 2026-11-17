@@ -12,21 +12,21 @@ Document the model being taught: Simplifications must appear in the briefing and
 
 **Evidence:** hand-checked correct, incorrect, and boundary cases; a source link and section for each networking rule; review of all shipped briefings and explanations. Expected results are recorded independently of the implementation under test.
 
-## C2 · Every round teaches through a decision
+## C2 · Every decision teaches
 
 The player's main action must exercise the target skill. Introduce a concept before testing it, and show the values needed to reason about the answer. A wrong answer explains the specific mistake and gives the player a useful next step. A correct answer explains why it works.
 
-Use this learning sequence: [FOUNDATION] → [APPLICATION] → [TRANSFER OR EDGE CASE]. Hints reveal a method first, then a worked step. Worked solutions are available when a learner is stuck; viewing one is recorded as assistance, never as independent mastery.
+Concepts appear progressively as the network grows (no separate levels): link capacity → device type sizing → aggregation growth; a concept's first appearance pauses play and briefs it. Hints reveal a method first, then a worked step. Worked solutions are available when a learner is stuck; viewing one is recorded as assistance, never as independent mastery.
 
 **Evidence:** a teammate can connect each player action to a learning outcome and describe what they learned from a deliberately wrong choice.
 
-## C3 · Progress is honest and retry is safe
+## C3 · Scoring is honest and pressure is fair
 
-A round completes only on a valid, correct submission. Incorrect answers keep the challenge available. Empty or malformed submissions give input guidance without counting as a wrong attempt. Repeated Submit actions cannot award progress twice.
+*(Amended 2026-11-17, v2.0.0: continuous survival play replaces rounds and levels.)*
 
-No lives, countdown, or speed bonus in this first version. Hints and retries have no penalty. Show completed rounds, attempts, and assistance separately; completion is not proof of independent mastery. The specification must say exactly what advances a round, finishes a level, and resets a session.
+The score is how long the network survives on a deterministic simulation clock. Time pressure is allowed but must be fair: the player can pause at any moment, pausing stops the clock, and every action stays available while paused. The rule that ends a game (continuous spilling for a stated number of seconds) is shown on screen with a visible countdown, and fixing the problem resets it. No hidden penalties: every cost, income and growth event follows a documented rule. Hints are recorded as assistance, separately from the score. Restart requires confirmation. The specification must say exactly what ends a game, how the score is computed, and what resets a session.
 
-**Evidence:** wrong-answer, repeated-submit, hint, completion, and reset checks match the specification.
+**Evidence:** pause, spill-countdown, reset-on-fix, game-over, budget, hint and restart checks match the specification.
 
 ## C4 · Access is part of the core game
 

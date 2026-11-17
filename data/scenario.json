@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 2,
+  "notes": "All bandwidth is integer Mbps; times are simulation seconds. Device demands, prices and income are illustrative game balance, not measurements or real prices. Shapes: circle = access point, triangle = desktop/workstation, hexagon = server, square = laptop, diamond = camera.",
+  "sources": [
+    {
+      "id": "cisco-ha-campus",
+      "title": "Cisco, Campus Network for High Availability Design Guide",
+      "url": "https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Campus/HA_campus_DG/hacampusdg.html",
+      "section": "Design Best Practices, QoS congestion figure (illustration 119839): labels \"Typical 20:1 data oversubscription\" (access to distribution) and \"Typical 4:1 data oversubscription\" (distribution to core)",
+      "claim": "Campus planning rule of thumb: about 20:1 oversubscription from access ports to the access uplink, and about 4:1 from distribution (aggregation) to core."
+    },
+    {
+      "id": "cisco-c9300-ds",
+      "title": "Cisco, Catalyst 9300 Series Switches Data Sheet",
+      "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/nb-06-cat9300-ser-data-sheet-cte-en.html",
+      "section": "Network module (uplink) options table (heading not yet verified; see README verification log)",
+      "claim": "Campus access switches of this family offer multigigabit access ports and 10G, 25G and 100G uplink options. The game's three switch classes are generic and not mapped to specific models."
+    }
+  ],
+  "switchClasses": [
+    {
+      "id": "sw-1g",
+      "label": "1G access switch (4×10G uplinks)",
+      "maxPortMbps": 1000,
+      "devicePorts": 48,
+      "uplinkMbps": 10000,
+      "maxUplinks": 4,
+      "roles": [
+        "access"
+      ],
+      "price": 100,
+      "uplinkPrice": 40
+    },
+    {
+      "id": "sw-nbaset",
+      "label": "nbase-t access switch (4×25G uplinks)",
+      "maxPortMbps": 10000,
+      "devicePorts": 48,
+      "uplinkMbps": 25000,
+      "maxUplinks": 4,
+      "roles": [
+        "access"
+      ],
+      "price": 300,
+      "uplinkPrice": 80
+    },
+    {
+      "id": "sw-25g",
+      "label": "25G switch (2×100G uplinks)",
+      "maxPortMbps": 25000,
+      "devicePorts": 48,
+      "uplinkMbps": 100000,
+      "maxUplinks": 2,
+      "roles": [
+        "access",
+        "aggregation"
+      ],
+      "price": 800,
+      "uplinkPrice": 200
+    }
+  ],
+  "deviceTypes": [
+    {
+      "id": "laptop",
+      "label": "Office laptop",
+      "portMbps": 1000,
+      "upMbps": 50,
+      "downMbps": 150,
+      "shape": "square"
+    },
+    {
+      "id": "workstation",
+      "label": "Video-editing workstation",
+      "portMbps": 1000,
+      "upMbps": 300,
+      "downMbps": 400,
+      "shape": "triangle"
+    },
+    {
+      "id": "camera",
+      "label": "4K security camera",
+      "portMbps": 1000,
+      "upMbps": 25,
+      "downMbps": 2,
+      "shape": "diamond"
+    },
+    {
+      "id": "wifi7-ap",
+      "label": "Wi-Fi 7 access point (5G port)",
+      "portMbps": 5000,
+      "upMbps": 1000,
+      "downMbps": 2500,
+      "shape": "circle"
+    },
+    {
+      "id": "server",
+      "label": "Render server (10G port)",
+      "portMbps": 10000,
+      "upMbps": 2500,
+      "downMbps": 1500,
+      "shape": "hexagon"
+    }
+  ],
+  "economy": {
+    "startCredits": 100,
+    "mbpsPerCredit": 2000
+  },
+  "rules": {
+    "stepSeconds": 0.25,
+    "spillLimitSeconds": 15,
+    "maxAccessSwitches": 4,
+    "minDeviceTypesPerSwitch": 3,
+    "maxSplits": 2
+  },
+  "briefing": {
+    "concept": "Keep the packets flowing for as long as you can. Every device sends traffic up toward the core and receives traffic down. A switch's traffic is shared evenly across its active uplinks to aggregation (also called distribution). A switch is spilling when the busier direction is above 80% of its uplink capacity, or when a device needs a faster port than the switch has. The 80% limit is this game's grading rule, not a figure from the cited sources. If the network spills for 15 seconds in a row, the game ends, and your score is how long you survived. Fixing every problem resets the countdown. You earn credits each second for the traffic you deliver and spend them on upgrades. You can pause at any time (button or P key); the clock stops and every action stays available. The network keeps growing, so plan ahead, but don't spend everything at once.",
+    "terms": [
+      "Uplinks: 1G class up to 4 × 10G (40 credits each); nbase-t class up to 4 × 25G (80 each); 25G class up to 2 × 100G (200 each).",
+      "Replacing a switch: 1G class 100, nbase-t 300, 25G 800 credits, including its first uplink. Removing uplinks is free but not refunded.",
+      "Splitting a switch: buys a second switch of the same class (its class price, with 1 uplink) and moves about half of each device type onto it. Both halves must keep at least 3 device types. Up to 2 splits per game.",
+      "Income: 1 credit per second for every 2 000 Mbps of downstream traffic you deliver. A spilling switch earns nothing; a spilling aggregation switch stops all income.",
+      "Rules of thumb: about 20:1 oversubscription from access ports to the access uplinks, and about 4:1 from aggregation to core. They help you plan; the 80% rule decides."
+    ],
+    "workedExample": {
+      "text": "A switch with 12 workstations at 400 Mbps downstream carries 4 800 Mbps: 48% of one 10 000 Mbps uplink. Add 12 more and it carries 9 600 Mbps = 96%: spilling. One more uplink for 40 credits gives 20 000 Mbps of capacity = 48%, and the countdown resets."
+    },
+    "simplifications": [
+      "Traffic is steady: each device type sends and receives a fixed amount, shown on screen, until an event or growth wave changes it.",
+      "The core is fixed and never the bottleneck; QoS, latency, bursts, buffering and failover are not modelled.",
+      "A device on a too-slow port is treated as spilling rather than negotiating down.",
+      "Prices and income are game balance, not real equipment prices."
+    ],
+    "sourceIds": [
+      "cisco-ha-campus"
+    ]
+  },
+  "start": {
+    "aggregation": {
+      "id": "agg",
+      "classId": "sw-25g",
+      "activeUplinks": 1
+    },
+    "accessSwitches": [
+      {
+        "id": "studio",
+        "label": "Studio switch",
+        "classId": "sw-1g",
+        "activeUplinks": 1,
+        "deviceGroups": [
+          {
+            "deviceTypeId": "workstation",
+            "count": 10
+          },
+          {
+            "deviceTypeId": "laptop",
+            "count": 8
+          },
+          {
+            "deviceTypeId": "camera",
+            "count": 4
+          }
+        ]
+      },
+      {
+        "id": "office",
+        "label": "Office switch",
+        "classId": "sw-1g",
+        "activeUplinks": 1,
+        "deviceGroups": [
+          {
+            "deviceTypeId": "laptop",
+            "count": 20
+          },
+          {
+            "deviceTypeId": "workstation",
+            "count": 4
+          },
+          {
+            "deviceTypeId": "camera",
+            "count": 6
+          }
+        ]
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "id": "studio-hires",
+      "at": 20,
+      "title": "The Studio hired 8 video editors.",
+      "addSwitches": [],
+      "addDevices": [
+        {
+          "switchId": "studio",
+          "deviceTypeId": "workstation",
+          "count": 8
+        }
+      ],
+      "demand": []
+    },
+    {
+      "id": "video-calls",
+      "at": 45,
+      "title": "Video calls went company-wide: laptops now use 220 Mbps down / 60 Mbps up, and the Office added 14 laptops.",
+      "addSwitches": [],
+      "addDevices": [
+        {
+          "switchId": "office",
+          "deviceTypeId": "laptop",
+          "count": 14
+        }
+      ],
+      "demand": [
+        {
+          "deviceTypeId": "laptop",
+          "upMbps": 60,
+          "downMbps": 220
+        }
+      ]
+    },
+    {
+      "id": "lobby-opens",
+      "at": 60,
+      "title": "A new Lobby switch came online with Wi-Fi 7 access points.",
+      "concept": "port-speed",
+      "notice": "New concept: device-port speed. Wi-Fi 7 access points need 5G (multigigabit) ports, but a 1G-class switch only has 1G ports. More uplinks cannot fix that: the switch class must change. The nbase-t class has ports up to 10G.",
+      "sourceIds": [
+        "cisco-c9300-ds"
+      ],
+      "addSwitches": [
+        {
+          "id": "lobby",
+          "label": "Lobby switch",
+          "classId": "sw-1g",
+          "activeUplinks": 1,
+          "deviceGroups": [
+            {
+              "deviceTypeId": "wifi7-ap",
+              "count": 4
+            },
+            {
+              "deviceTypeId": "camera",
+              "count": 6
+            },
+            {
+              "deviceTypeId": "laptop",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "addDevices": [],
+      "demand": []
+    },
+    {
+      "id": "render-servers",
+      "at": 90,
+      "title": "The Studio installed 2 render servers with 10G ports.",
+      "addSwitches": [],
+      "addDevices": [
+        {
+          "switchId": "studio",
+          "deviceTypeId": "server",
+          "count": 2
+        }
+      ],
+      "demand": []
+    },
+    {
+      "id": "atrium",
+      "at": 120,
+      "title": "The atrium opened: the Lobby added 20 Wi-Fi 7 access points.",
+      "concept": "aggregation",
+      "notice": "New concept: aggregation. The aggregation switch carries the sum of every access switch's traffic. When it goes over 80%, everything spills and all income stops. Campus guidance plans about 4:1 oversubscription from aggregation to core; here the 80% rule decides. Aggregation can have a second 100G uplink.",
+      "sourceIds": [
+        "cisco-ha-campus"
+      ],
+      "addSwitches": [],
+      "addDevices": [
+        {
+          "switchId": "lobby",
+          "deviceTypeId": "wifi7-ap",
+          "count": 20
+        }
+      ],
+      "demand": []
+    },
+    {
+      "id": "office-wifi",
+      "at": 150,
+      "title": "The Office added 4 Wi-Fi 7 access points.",
+      "addSwitches": [],
+      "addDevices": [
+        {
+          "switchId": "office",
+          "deviceTypeId": "wifi7-ap",
+          "count": 4
+        }
+      ],
+      "demand": []
+    },
+    {
+      "id": "east-wing",
+      "at": 180,
+      "title": "The East wing opened with its own access switch.",
+      "addSwitches": [
+        {
+          "id": "east-wing",
+          "label": "East wing switch",
+          "classId": "sw-1g",
+          "activeUplinks": 1,
+          "deviceGroups": [
+            {
+              "deviceTypeId": "laptop",
+              "count": 10
+            },
+            {
+              "deviceTypeId": "workstation",
+              "count": 4
+            },
+            {
+              "deviceTypeId": "camera",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "addDevices": [],
+      "demand": []
+    }
+  ],
+  "waves": {
+    "startAt": 210,
+    "every": 30,
+    "growthPct": 10,
+    "addPerSwitch": [
+      {
+        "deviceTypeId": "laptop",
+        "count": 2
+      },
+      {
+        "deviceTypeId": "workstation",
+        "count": 1
+      },
+      {
+        "deviceTypeId": "camera",
+        "count": 1
+      }
+    ],
+    "newSwitchEvery": 3,
+    "newSwitchTemplate": {
+      "label": "Wing {n} switch",
+      "classId": "sw-1g",
+      "activeUplinks": 1,
+      "deviceGroups": [
+        {
+          "deviceTypeId": "laptop",
+          "count": 8
+        },
+        {
+          "deviceTypeId": "workstation",
+          "count": 4
+        },
+        {
+          "deviceTypeId": "camera",
+          "count": 4
+        }
+      ]
+    }
+  },
+  "hints": {
+    "method": "Method: find each switch marked spilling. Compare its busier direction with 80% of its uplink capacity, and check every device's port speed against the switch class's ports. Fix the cheapest real cause first.",
+    "capacity": "{switch} carries {load} {direction} on {cap} ({util}). It needs at least {need} of uplink capacity at 80%. Add uplinks, or choose a class with faster uplinks if it already uses all {max}.",
+    "port": "{switch} has {device} devices that need {devicePort} ports, but a {class} only has {maxPort}. Replace it with a class whose device ports are fast enough, then check its uplinks.",
+    "aggregation": "Aggregation carries every access switch: {load} {direction} on {cap} ({util}). Add an aggregation uplink."
+  },
+  "messages": {
+    "status-capacity": "{switch}: {util} {direction} ({load} of {cap}), above the 80% limit.",
+    "status-port": "{switch}: {device} devices need {devicePort} ports; a {class} only has {maxPort}.",
+    "status-aggregation": "Aggregation: {util} {direction} ({load} of {cap}), above the 80% limit. It carries every access switch.",
+    "fixed": "Fixed: {switch} is now at {util}, within the 80% limit.",
+    "game-over-capacity": "{switch} spilled for 15 seconds in a row: {util} {direction} ({load} of {cap}).",
+    "game-over-port": "{switch} spilled for 15 seconds in a row: its {device} devices needed {devicePort} ports, but a {class} only has {maxPort}.",
+    "game-over-aggregation": "Aggregation spilled for 15 seconds in a row: {util} {direction} ({load} of {cap})."
+  }
+}

@@ -20,43 +20,49 @@ utilization); a source link and section for each networking rule; review of all 
 briefings and explanations. Expected results are recorded independently of the implementation
 under test.
 
-### C2 · Every Round Teaches Through a Decision
+### C2 · Every Decision Teaches
 
-The player's main action — choosing which links and devices to upgrade — MUST exercise the
-target skill. A concept MUST be introduced before it is tested, and the values needed to reason
-about the answer MUST be visible. A wrong answer MUST explain the specific mistake (e.g.,
-upgrading a non-constrained link) and give a useful next step. A correct answer MUST explain why
-it works.
+The player's main action — choosing which links and switches to upgrade, and when — MUST
+exercise the target skill. A concept MUST be introduced before it is tested, and the values
+needed to reason about it MUST be visible. Whenever part of the network is spilling, the game
+MUST explain the specific cause (which switch, which direction or port, and the values) and a
+useful next step. When a problem is fixed, it MUST say why the fix works.
 
-Learning sequence: **link capacity** (foundation: predict link load from attached end devices)
-→ **device type sizing** (application: choose the right switch class for the situation) →
-**organic growth** (transfer: re-plan as new devices join and demand rises). Hints MUST reveal a
-method first, then a worked step. Worked solutions MUST be available when a learner is stuck;
-viewing one is recorded as assistance, never as independent mastery.
+Concepts are introduced progressively as the network grows, not in separate levels:
+**link capacity** (foundation: predict uplink load from attached end devices) → **device type
+sizing** (application: choose the switch class whose ports and uplinks fit) → **aggregation
+growth** (transfer: re-plan as devices and demand keep rising). A concept's first appearance on
+the growth timeline MUST pause play and brief it. Hints MUST reveal a method before a worked
+step; using one is recorded as assistance, never as independent mastery.
 
 **Evidence:** a teammate can connect each player action to a learning outcome and describe what
 they learned from a deliberately wrong choice.
 
-### C3 · Progress Is Honest and Retry Is Safe
+### C3 · Scoring Is Honest and Pressure Is Fair
 
-A round completes only on a valid, correct submission. Incorrect answers MUST keep the challenge
-available. Empty or malformed submissions MUST give input guidance without counting as a wrong
-attempt. Repeated Submit actions MUST NOT award progress twice.
+The score is how long the network survives, measured on a deterministic simulation clock. Time
+pressure is allowed, but it MUST be fair: the player MUST be able to pause at any moment, pausing
+MUST stop the simulation clock, and every action MUST remain available while paused. The rule
+that ends a game (continuous spilling for a stated number of seconds) MUST be shown on screen,
+with a visible countdown whenever it is running. Fixing the problem MUST reset that countdown.
 
-The first version has no lives, countdown, or speed bonus; continuous packet flow MUST NOT force
-or time a decision. Hints and retries carry no penalty. Completed rounds, attempts, and
-assistance MUST be shown separately; completion is not proof of independent mastery. The
-specification MUST state exactly what advances a round, finishes a level, and resets a session.
+There are no hidden penalties: every cost, income and growth event follows a documented rule.
+Hints are recorded as assistance and shown separately from the score; a score earned with
+assistance is not proof of independent mastery. Restart MUST require confirmation. The
+specification MUST state exactly what ends a game, how the score is computed, and what resets a
+session.
 
-**Evidence:** wrong-answer, repeated-submit, hint, completion, and reset checks match the
-specification.
+**Evidence:** pause, spill-countdown, reset-on-fix, game-over, budget, hint and restart checks
+match the specification.
 
 ### C4 · Access Is Part of the Core Game
 
 All core actions MUST be usable by keyboard with visible focus, readable labels, and an
 understandable order. Success and failure MUST be explained with text as well as color. Essential
 diagrams (topology, utilization) MUST have a text equivalent. Reduced-motion preferences MUST be
-respected; animation MUST never delay the availability of feedback or controls.
+respected; animation MUST never delay the availability of feedback or controls. Because play
+is timed, a pause control MUST be reachable by keyboard at all times, so no action ever depends
+on input speed.
 
 The challenge MUST remain usable on a typical laptop and a narrow browser window. Dense technical
 data MAY scroll within its own labeled container, without hiding the action buttons.
@@ -67,8 +73,9 @@ Record what was actually checked; do not claim full accessibility certification.
 ### C5 · The First Version Is Deterministic and Self-Contained
 
 The game ships authored content and deterministic domain logic. It MUST require no account,
-backend, live device connection, model, or API key. Traffic and growth MUST be deterministic for
-a given level. AI MAY help write code and assets during development; its output receives the same
+backend, live device connection, model, or API key. Traffic and growth MUST be deterministic: the
+same timeline and the same player actions at the same simulation times MUST always produce the
+same result. The simulation MUST advance in fixed steps that do not depend on frame rate. AI MAY help write code and assets during development; its output receives the same
 review as any other contribution.
 
 Runtime AI tutoring, generated questions, and free-text AI grading are stretch work. Adding them
@@ -143,4 +150,4 @@ affected spec and plan, and rerun `/speckit-analyze`.
 principle's **Evidence** line defines what a reviewer must see before that principle is
 considered satisfied.
 
-**Version**: 1.0.1 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
+**Version**: 2.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17

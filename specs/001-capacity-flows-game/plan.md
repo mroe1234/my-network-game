@@ -60,6 +60,18 @@ All Technical Context unknowns are resolved; see [research.md](./research.md).
 spec, and both are recorded there: FR-014 (authored start per round, user decision) and FR-004a
 (device-port-speed rule, R5).
 
+**Re-check after change requests (2026-11-17)**: no new violations.
+
+| Principle | Change requests FR-010a, FR-011, FR-011b | Status |
+| --- | --- | --- |
+| C1 Technical truth | Arrival queues are captioned as offered load; buffering stays excluded (R13). Shade is tied to the 80% grading rule (R12) | Pass |
+| C2 Teaches through a decision | The action card puts the decision next to the thing being decided and shows the devices' demand and port speed | Pass |
+| C3 Honest progress | Card actions only edit the pending design: no grading, no attempt, no recomputed utilization (R8, R11). Queues grow with demand, never with time | Pass |
+| C4 Access | Diagram items are keyboard buttons with labels; shape, lane, legend and numbers back up every colour cue; reduced motion unchanged | Pass (keyboard and screen-reader playthrough still manual) |
+| C5 Deterministic, self-contained | No new dependencies; packet allocation is deterministic | Pass |
+| C6 Content vs logic | Device shapes live in `data/levels.json` (`DeviceType.shape`) and are validated | Pass |
+| C7 Done is demonstrated | Spec FR-010a / FR-011 / FR-011b, tasks T037–T040, README and quickstart updated; animation verified by stepped frames, real-time motion recorded as not run (R14) | Pass |
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -89,9 +101,10 @@ engine/
   state.js               Session transitions, attempts, assistance, restart
   feedback.js            EvaluationResult → explanation text (wording from data + values)
 ui/
-  render.js              Briefing, round (SVG topology + text table), feedback, summaries
-  flow.js                Ambient packet animation over committed design; static view if reduced motion
-  controls.js            Upgrade selectors, Submit/Hint/Solution/Next/Restart, focus management
+  render.js              Briefing, round (selectable SVG topology, arrival queues R13, text table), feedback, summaries
+  flow.js                Ambient packet animation over committed design (shape/colour/shade, R12); static view if reduced motion
+  shapes.js              Device-type glyphs, direction/fullness fill, load-proportional packet allocation (R12)
+  controls.js            Upgrade selectors, action card for the selected diagram item (R11), Submit/Hint/Solution/Next/Restart, focus
 data/
   levels.json            Sources, switch classes, device types, 3 levels × 2 rounds
 tests/
@@ -103,7 +116,9 @@ README.md                Run, simplifications/exclusions, sources, verification 
 ```
 
 **Structure Decision**: single static project at the repository root, following the project
-PLAN.md layout, plus `ui/flow.js` to keep animation separate from grading and rendering.
+PLAN.md layout, plus `ui/flow.js` to keep animation separate from grading and rendering, and
+`ui/shapes.js` (added for the change requests) so the diagram, packets and queues share one
+visual encoding.
 
 ## Implementation Slices
 
@@ -122,6 +137,17 @@ PLAN.md layout, plus `ui/flow.js` to keep animation separate from grading and re
 2. **Content numbers**: device-type demands must create real bottlenecks (R1 note). Pick
    plausible high-demand types (e.g., video workstation, multigigabit Wi-Fi AP) and state in the
    briefing that the values are illustrative.
+
+## Change Requests (2026-11-17)
+
+Requested after the first playable build and implemented as tasks T037–T040 (tasks.md Phase 7):
+
+| Change | Spec | Design | Files |
+| --- | --- | --- | --- |
+| Click diagram items to act on them | FR-010a | R11 | `ui/render.js`, `ui/controls.js`, `main.js`, `index.html` |
+| Visible arrival queues at the devices | FR-011b | R13 | `ui/render.js`, `ui/controls.js` |
+| Packet shape = device, colour = direction, shade = fullness | FR-011 | R12 | `ui/flow.js`, `ui/shapes.js`, `data/levels.json`, `engine/content.js` |
+| Headless animation testing | — | R14 | click-through drivers (not in the repository) |
 
 ## Complexity Tracking
 

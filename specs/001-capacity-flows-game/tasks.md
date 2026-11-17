@@ -133,6 +133,19 @@ are relative to the repository root (single static project, see plan.md "Project
 
 ---
 
+## Phase 7: Change Requests (2026-11-17)
+
+**Purpose**: Changes requested after the first playable build.
+
+- [X] T037 [US1] Make diagram items selectable in `ui/render.js` (switch, uplinks and device group select their switch; core shows "fixed"; keyboard Enter/Space) and add the action card in `ui/controls.js` (− / + uplink bounded by SwitchClass.maxUplinks, class picker only when Round.allowedUpgrades includes `replace`, devices with DeviceType.portMbps / upMbps / downMbps, per data-model.md); changes go to SessionState.pendingDesign only (FR-010a)
+- [X] T038 [US1] Colour-code packets in `ui/flow.js` and `style.css`: upstream (ingress), downstream (egress) and end-user device link, each with its own shape and lane, spilling per direction; HTML legend; reduced motion unchanged (FR-011, FR-025)
+
+- [X] T039 [US2] Draw arrival queues under each device group in `ui/render.js` (scale per ▲ chosen per round; outlined ▲ for devices from Round.addedDevices / Round.addedSwitches per data-model.md; exact ↑/↓ text; caption that buffering is not modelled); "New this round" column in the device table and "(+N new this round)" in the action card (FR-011b)
+
+- [X] T040 [US2] Re-encode packets in `ui/flow.js` / `ui/shapes.js`: shape from DeviceType.shape (data-model.md; validated in `engine/content.js`), colour = direction (blue toward / purple from the device), shade = link fullness per direction; queue icons use the same shapes; legend explains all three (FR-011)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

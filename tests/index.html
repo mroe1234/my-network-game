@@ -21,7 +21,7 @@
     try {
       await import('./rules.test.js');
       await import('./content.test.js');
-      await import('./state.test.js');
+      await import('./sim.test.js');
       const { total, passed, failed } = await run();
       // Zero discovered tests is a failure (quickstart V1).
       const ok = total > 0 && failed.length === 0;

@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-17
 
-**Status**: Draft (regenerated 2026-11-17 from SPEC.md against constitution v1.0.1)
+**Status**: Superseded on 2026-11-17 by `specs/002-survival-growth/` (constitution v2.0.0: continuous survival play replaces rounds and levels). Kept as the record of the first playable build.
 
 **Input**: User description: "Use SPEC.md" — Bobby Bits has to keep the packets flowing through
 the network. The player is a network engineer in a three-tier campus network. Each round shows
@@ -41,6 +41,17 @@ slowly and organically with new devices. The session ends when all packets have 
 - Q: (analysis) Which upgrades does each round offer? → A: Each round declares its allowed
   upgrade types. Level 1 offers only "add uplinks"; Levels 2–3 offer "add uplinks" and
   "replace switch" (FR-010).
+- Q: (change request) What should clicking a switch, link or device group in the diagram do?
+  → A: Select that switch and show an action card with its values, its devices, − / + uplink
+  buttons and (Levels 2–3) a class picker; changes are planned only, never graded or counted
+  (FR-010a).
+- Q: (change request) What should the visible traffic queues show? → A: Arrivals at the
+  devices: demand waiting to enter the network per device group, with devices new this round
+  highlighted; labelled as offered load, not buffering (FR-011b).
+- Q: (change request) What should a packet's shape, colour and shade communicate? → A: Shape =
+  device type (circle access point, triangle desktop, hexagon server, square laptop, diamond
+  camera); colour = direction (blue toward the device, purple from it); shade = how full the
+  link is, darker as spare capacity runs out (FR-011).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -239,12 +250,31 @@ Constitution C1 (v1.0.1) makes this section the single documented source of the 
   speed changes only by replacing the switch it attaches to. Each round MUST declare which
   upgrade types it allows, and only those MUST be offered: Level 1 rounds allow only add uplinks;
   Level 2 and 3 rounds allow both (constitution C2: introduce a concept before testing it).
+- **FR-010a** *(change request 2026-11-17)*: Clicking, or pressing Enter/Space on, a switch,
+  its uplinks or its device group in the diagram MUST select that switch and show an action card
+  with its committed values, its devices (port speed and per-device demand), − / + uplink
+  buttons and, where the round allows it, a switch-class picker. The card changes only the
+  pending design (no grading, no attempt) and stays in sync with the side-panel controls.
+  Selecting the core MUST explain that it is fixed and not graded.
 - **FR-011**: Once the game starts, packets MUST flow continuously through the current design as
   an ambient visualization, visibly spilling at any component over 80%. This flow is purely
   illustrative: it MUST NOT time, force, or score a decision, and grading happens only on Submit.
   After submission, the flow MUST reflect the submitted design (delivered where capacity
   suffices, spilling where it does not), alongside an explanation naming the rule and the
-  relevant values.
+  relevant values. *(Change requests 2026-11-17)*: packet **shape** MUST show the device type
+  the traffic comes from or goes to (DeviceType.shape: circle = access point, triangle =
+  desktop/workstation, hexagon = server, square = laptop, diamond = camera); packet **colour**
+  MUST show direction (blue toward the device, purple from the device); packet **shade** MUST
+  get darker as that link fills up in that direction (darkest at the 80% limit and above). A
+  mixed link carries each device type's shape in proportion to its share of that direction's
+  load. Directions use opposite lanes. Spilling packets keep their colour and peel off and fade.
+  A text legend MUST explain shape, colour and shade, so colour is never the only cue.
+- **FR-011b** *(change request 2026-11-17)*: Each device group MUST show an arrival queue: icons
+  shaped by device type and sized to the demand waiting to enter the network (busier direction, with a stated scale per
+  icon) plus the exact upstream and downstream figures as text. Devices that joined this round
+  (Round.addedDevices or Round.addedSwitches) MUST be visually distinct and labelled "new this
+  round", including in the device table and action card. A caption MUST state that queues show
+  offered load only, because buffering and queuing delay are excluded from the model.
 - **FR-012**: An incorrect design MUST leave the round playable, and the explanation MUST name
   the specific mistake (e.g., upgraded a non-bottleneck; chose an undersized switch class).
 - **FR-013**: A correct design MUST explain why it works and enable an explicit Next action.

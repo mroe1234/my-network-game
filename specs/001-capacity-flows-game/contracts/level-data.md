@@ -8,7 +8,7 @@ Validated in full by `engine/content.js` before anything is shown (FR-023, C6). 
   "schemaVersion": 1,
   "sources":       [ { "id", "title", "url", "section", "claim" } ],
   "switchClasses": [ { "id", "label", "maxPortMbps", "devicePorts", "uplinkMbps", "maxUplinks", "roles" } ],
-  "deviceTypes":   [ { "id", "label", "portMbps", "upMbps", "downMbps" } ],
+  "deviceTypes":   [ { "id", "label", "portMbps", "upMbps", "downMbps", "shape" } ],
   "messages":      { "<reasonCode or 'rule'>": "fixed explanation text with {placeholders}" },
   "levels": [ {
     "id", "title", "outcome", "sourceIds",
