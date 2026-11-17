@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 1,
+  "notes": "All bandwidth values are integer Mbps. Device demands are illustrative, chosen high enough to create real bottlenecks; they are not measurements.",
+  "sources": [
+    {
+      "id": "cisco-ha-campus",
+      "title": "Cisco, Campus Network for High Availability Design Guide",
+      "url": "https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Campus/HA_campus_DG/hacampusdg.html",
+      "section": "Design Best Practices, QoS congestion figure (illustration 119839): labels \"Typical 20:1 data oversubscription\" (access to distribution) and \"Typical 4:1 data oversubscription\" (distribution to core)",
+      "claim": "Campus planning rule of thumb: about 20:1 oversubscription from access ports to the access uplink, and about 4:1 from distribution (aggregation) to core."
+    },
+    {
+      "id": "cisco-c9300-ds",
+      "title": "Cisco, Catalyst 9300 Series Switches Data Sheet",
+      "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/nb-06-cat9300-ser-data-sheet-cte-en.html",
+      "section": "Network module (uplink) options table (heading not yet verified; see README verification log)",
+      "claim": "Campus access switches of this family offer multigigabit access ports and 10G, 25G and 100G uplink options. The game's three switch classes are generic and not mapped to specific models."
+    }
+  ],
+  "switchClasses": [
+    {
+      "id": "sw-1g",
+      "label": "1G access switch (4×10G uplinks)",
+      "maxPortMbps": 1000,
+      "devicePorts": 48,
+      "uplinkMbps": 10000,
+      "maxUplinks": 4,
+      "roles": [
+        "access"
+      ]
+    },
+    {
+      "id": "sw-nbaset",
+      "label": "nbase-t access switch (4×25G uplinks)",
+      "maxPortMbps": 10000,
+      "devicePorts": 48,
+      "uplinkMbps": 25000,
+      "maxUplinks": 4,
+      "roles": [
+        "access"
+      ]
+    },
+    {
+      "id": "sw-25g",
+      "label": "25G switch (2×100G uplinks)",
+      "maxPortMbps": 25000,
+      "devicePorts": 48,
+      "uplinkMbps": 100000,
+      "maxUplinks": 2,
+      "roles": [
+        "access",
+        "aggregation"
+      ]
+    }
+  ],
+  "deviceTypes": [
+    {
+      "id": "laptop",
+      "label": "Office laptop",
+      "portMbps": 1000,
+      "upMbps": 50,
+      "downMbps": 150
+    },
+    {
+      "id": "workstation",
+      "label": "Video-editing workstation",
+      "portMbps": 1000,
+      "upMbps": 300,
+      "downMbps": 400
+    },
+    {
+      "id": "camera",
+      "label": "4K security camera",
+      "portMbps": 1000,
+      "upMbps": 25,
+      "downMbps": 2
+    },
+    {
+      "id": "wifi7-ap",
+      "label": "Wi-Fi 7 access point (5G multigigabit port)",
+      "portMbps": 5000,
+      "upMbps": 1000,
+      "downMbps": 2500
+    }
+  ],
+  "levels": [
+    {
+      "id": "lvl-1-link-capacity",
+      "title": "Link capacity",
+      "outcome": "LO1",
+      "sourceIds": [
+        "cisco-ha-campus"
+      ],
+      "briefing": {
+        "concept": "Every device behind an access switch sends traffic up (toward the core) and receives traffic down. That traffic is shared evenly across the switch's active uplinks to aggregation (also called distribution). Utilization = load ÷ uplink capacity. In this game a switch passes when the busier direction is at or below 80% of its active uplink capacity. Campus designers also use rules of thumb: about 20:1 oversubscription from access ports to the access uplinks, and about 4:1 from aggregation to core. Those rules of thumb assume typical office traffic. These studio workstations are far heavier, so a 20:1 design would spill here: always check the actual load. The rules of thumb help you plan; the 80% rule decides pass or fail. The 80% limit is this game's grading rule (headroom chosen by the course designers), not a figure from the cited sources.",
+        "terms": [
+          "Uplink: a link from an access switch to aggregation (or from aggregation to core).",
+          "Load: the total demand of every device behind a switch, upstream or downstream.",
+          "Capacity: active uplinks × uplink speed (a 1G access switch has 10 000 Mbps uplinks, up to 4).",
+          "Utilization: load ÷ capacity. At or below 80% passes; above 80% spills packets."
+        ],
+        "workedExample": {
+          "text": "A lab switch has 12 workstations at 400 Mbps downstream each: 12 × 400 = 4 800 Mbps on one 10 000 Mbps uplink = 48%, which passes. With 24 workstations the load is 9 600 Mbps = 96%, which fails. A second uplink doubles capacity to 20 000 Mbps: 9 600 ÷ 20 000 = 48%, which passes. Upgrading any other switch would not have helped."
+        },
+        "simplifications": [
+          "Traffic is steady: each device type always sends and receives the same amount, shown on screen.",
+          "Traffic is shared evenly across a switch's active uplinks.",
+          "The core is fixed and never the bottleneck; QoS, latency, bursts and failover are not modelled.",
+          "Device demand values are illustrative, chosen to create real bottlenecks."
+        ]
+      },
+      "rounds": [
+        {
+          "id": "l1-r1",
+          "intro": "Packets are spilling somewhere in the building. Find the switch whose uplinks are over 80% and add uplinks there.",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 1
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 21
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [],
+          "addedDevices": [],
+          "allowedUpgrades": [
+            "uplinks"
+          ],
+          "claims": {
+            "uplinkOnly": true
+          },
+          "hints": [
+            "Method: for each switch, multiply device count by per-device demand in each direction, then compare the busier direction with 80% of its uplink capacity.",
+            "Worked step: Studio has 21 × 400 = 8 400 Mbps downstream on one 10 000 Mbps uplink = 84%. The Edit suite is at 20 × 400 = 8 000 Mbps = exactly 80%, which still passes. Which switch needs another uplink?"
+          ],
+          "reference": {
+            "studio": {
+              "classId": "sw-1g",
+              "activeUplinks": 2
+            }
+          }
+        },
+        {
+          "id": "l1-r2",
+          "intro": "The studio hired 20 more editors. This round starts from the previous round's reference design (Studio on 2 uplinks); any extra upgrades you made are not carried over.",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 1
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 2,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 41
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [],
+          "addedDevices": [
+            {
+              "switchId": "studio",
+              "deviceTypeId": "workstation",
+              "count": 20
+            }
+          ],
+          "allowedUpgrades": [
+            "uplinks"
+          ],
+          "claims": {
+            "uplinkOnly": true
+          },
+          "hints": [
+            "Method: recompute the load on the switch that gained devices, then find the smallest number of uplinks that keeps it at or below 80%.",
+            "Worked step: Studio now has 41 × 400 = 16 400 Mbps downstream. Two uplinks give 20 000 Mbps = 82%. How many 10 000 Mbps uplinks keep 16 400 Mbps at or below 80%?"
+          ],
+          "reference": {
+            "studio": {
+              "classId": "sw-1g",
+              "activeUplinks": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "lvl-2-device-sizing",
+      "title": "Device type sizing",
+      "outcome": "LO2",
+      "sourceIds": [
+        "cisco-c9300-ds",
+        "cisco-ha-campus"
+      ],
+      "briefing": {
+        "concept": "Uplinks are only half the story. Each switch class has a maximum device-port speed: the 1G class has 1G ports, the nbase-t class has multigigabit ports up to 10G, and the 25G class has ports up to 25G. A device whose port is faster than its switch supports is a sizing error, and adding uplinks will not fix it. Choose the class first, then size its uplinks with the 80% rule. From this level you can also replace a switch with another class.",
+        "terms": [
+          "Device-port speed: the fastest port a switch class offers its devices (1G, 10G, 25G).",
+          "Multigigabit (nbase-t): ports that run at 2.5G, 5G or 10G, common for Wi-Fi 7 access points.",
+          "Replace switch: change an access switch to another class; its uplink speed and maximum uplinks change with it.",
+          "Uplink options: 1G class 4 × 10G; nbase-t class 4 × 25G; 25G class 2 × 100G."
+        ],
+        "workedExample": {
+          "text": "A conference room gets 3 Wi-Fi 7 APs (5 000 Mbps ports, 2 500 Mbps downstream each) on a 1G-class switch. The ports are too slow, so the switch class must change. On an nbase-t switch the load is 3 × 2 500 = 7 500 Mbps on one 25 000 Mbps uplink = 30%, which passes."
+        },
+        "simplifications": [
+          "A device on a too-slow port is treated as a sizing error rather than modelled as negotiating down to a lower speed.",
+          "Each switch class has 48 device ports; aggregation downlink ports are assumed to match any access uplink.",
+          "The three switch classes are generic, not specific Catalyst models."
+        ]
+      },
+      "rounds": [
+        {
+          "id": "l2-r1",
+          "intro": "Facilities installed a new Lobby switch with four Wi-Fi 7 access points. This round starts from the previous round's reference design (Studio on 3 uplinks) plus the new Lobby switch.",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 1
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 3,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 41
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  }
+                ]
+              },
+              {
+                "id": "lobby",
+                "label": "Lobby switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 4
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [
+            {
+              "id": "lobby",
+              "label": "Lobby switch",
+              "classId": "sw-1g",
+              "activeUplinks": 1,
+              "deviceGroups": [
+                {
+                  "deviceTypeId": "wifi7-ap",
+                  "count": 4
+                }
+              ]
+            }
+          ],
+          "addedDevices": [],
+          "allowedUpgrades": [
+            "uplinks",
+            "replace"
+          ],
+          "claims": {
+            "requiresClassChange": true
+          },
+          "hints": [
+            "Method: check two things for every access switch: is each device's port speed supported by the switch class, and is the busier direction at or below 80% of uplink capacity?",
+            "Worked step: the Wi-Fi 7 APs need 5 000 Mbps ports, but the 1G class only has 1 000 Mbps ports, so more uplinks cannot fix the Lobby. The APs also pull 4 × 2 500 = 10 000 Mbps downstream. Which class has multigigabit ports, and how many of its 25 000 Mbps uplinks do you need?"
+          ],
+          "reference": {
+            "lobby": {
+              "classId": "sw-nbaset",
+              "activeUplinks": 1
+            }
+          }
+        },
+        {
+          "id": "l2-r2",
+          "intro": "The Edit suite added six Wi-Fi 7 access points for laptop reviews. This round starts from the previous round's reference design (Lobby on an nbase-t switch).",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 1
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 3,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 41
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-1g",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  },
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 6
+                  }
+                ]
+              },
+              {
+                "id": "lobby",
+                "label": "Lobby switch",
+                "classId": "sw-nbaset",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 4
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [],
+          "addedDevices": [
+            {
+              "switchId": "edit",
+              "deviceTypeId": "wifi7-ap",
+              "count": 6
+            }
+          ],
+          "allowedUpgrades": [
+            "uplinks",
+            "replace"
+          ],
+          "claims": {
+            "requiresClassChange": true
+          },
+          "hints": [
+            "Method: first fix the port speed (choose a class whose device ports are fast enough), then size that class's uplinks for the new total load.",
+            "Worked step: Edit suite downstream = 20 × 400 + 6 × 2 500 = 23 000 Mbps. One 25 000 Mbps nbase-t uplink would be 92%, over the limit. How many uplinks keep it at or below 80%?"
+          ],
+          "reference": {
+            "edit": {
+              "classId": "sw-nbaset",
+              "activeUplinks": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "lvl-3-organic-growth",
+      "title": "Organic growth",
+      "outcome": "LO2",
+      "sourceIds": [
+        "cisco-ha-campus",
+        "cisco-c9300-ds"
+      ],
+      "briefing": {
+        "concept": "Networks grow a few devices at a time, and each change can move the bottleneck. After every change, re-check port speeds, then each access switch, then the aggregation uplinks to the core, which carry the sum of every access switch. Campus guidance plans for about 4:1 oversubscription between aggregation (distribution) and core; in this game the 80% rule on the shown demand decides pass or fail.",
+        "terms": [
+          "Aggregation load: the sum of every access switch's load, per direction.",
+          "Moving bottleneck: fixing one switch can expose the next constraint upstream.",
+          "4:1 rule of thumb: plan aggregation-to-core uplink capacity at about a quarter of the total access-uplink capacity below it."
+        ],
+        "workedExample": {
+          "text": "Three access switches each send 30 000 Mbps downstream: aggregation carries 90 000 Mbps. On one 100 000 Mbps uplink that is 90%, which fails even though every access switch passes. A second uplink gives 200 000 Mbps = 45%."
+        },
+        "simplifications": [
+          "Growth is scripted: each round adds known devices, and its starting design is the previous round's reference solution.",
+          "The core itself is fixed and never the bottleneck.",
+          "Device demand values are illustrative, chosen to create real bottlenecks."
+        ]
+      },
+      "rounds": [
+        {
+          "id": "l3-r1",
+          "intro": "The building opened its atrium: the Lobby switch now serves 40 Wi-Fi 7 access points. This round starts from the previous round's reference design (Edit suite on an nbase-t switch with 2 uplinks).",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 1
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 3,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 41
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-nbaset",
+                "activeUplinks": 2,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  },
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 6
+                  }
+                ]
+              },
+              {
+                "id": "lobby",
+                "label": "Lobby switch",
+                "classId": "sw-nbaset",
+                "activeUplinks": 1,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 40
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [],
+          "addedDevices": [
+            {
+              "switchId": "lobby",
+              "deviceTypeId": "wifi7-ap",
+              "count": 36
+            }
+          ],
+          "allowedUpgrades": [
+            "uplinks",
+            "replace"
+          ],
+          "claims": {
+            "requiresClassChange": true
+          },
+          "hints": [
+            "Method: size the access switch first, then add up every access switch's load to check the aggregation uplinks to the core.",
+            "Worked step: Lobby downstream = 40 × 2 500 = 100 000 Mbps, more than the nbase-t maximum of 4 × 25 000 Mbps at 80%. Aggregation then carries 16 400 + 23 000 + 100 000 = 139 400 Mbps. What does one 100 000 Mbps aggregation uplink give?"
+          ],
+          "reference": {
+            "lobby": {
+              "classId": "sw-25g",
+              "activeUplinks": 2
+            },
+            "agg": {
+              "classId": "sw-25g",
+              "activeUplinks": 2
+            }
+          }
+        },
+        {
+          "id": "l3-r2",
+          "intro": "The Studio added four Wi-Fi 7 access points for tablets. This round starts from the previous round's reference design (Lobby on a 25G switch, aggregation on 2 uplinks).",
+          "start": {
+            "aggregation": {
+              "id": "agg",
+              "classId": "sw-25g",
+              "activeUplinks": 2
+            },
+            "accessSwitches": [
+              {
+                "id": "studio",
+                "label": "Studio switch",
+                "classId": "sw-1g",
+                "activeUplinks": 3,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 41
+                  },
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 4
+                  }
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit suite switch",
+                "classId": "sw-nbaset",
+                "activeUplinks": 2,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "workstation",
+                    "count": 20
+                  },
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 6
+                  }
+                ]
+              },
+              {
+                "id": "lobby",
+                "label": "Lobby switch",
+                "classId": "sw-25g",
+                "activeUplinks": 2,
+                "deviceGroups": [
+                  {
+                    "deviceTypeId": "wifi7-ap",
+                    "count": 40
+                  }
+                ]
+              }
+            ]
+          },
+          "addedSwitches": [],
+          "addedDevices": [
+            {
+              "switchId": "studio",
+              "deviceTypeId": "wifi7-ap",
+              "count": 4
+            }
+          ],
+          "allowedUpgrades": [
+            "uplinks",
+            "replace"
+          ],
+          "claims": {
+            "requiresClassChange": true
+          },
+          "hints": [
+            "Method: check the port speeds on the switch that grew, then size its uplinks and re-check aggregation.",
+            "Worked step: Studio now has 41 workstations and 4 APs: 41 × 400 + 4 × 2 500 = 26 400 Mbps downstream, and the APs need 5 000 Mbps ports. Which class fixes the ports, and how many uplinks keep 26 400 Mbps at or below 80%?"
+          ],
+          "reference": {
+            "studio": {
+              "classId": "sw-nbaset",
+              "activeUplinks": 2
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "messages": {
+    "rule": "Rule (this game's grading rule): a switch passes when the busier direction of its traffic is at or below 80% of its active uplink capacity.",
+    "fits": "Every switch is at or below 80%, so all packets get through.",
+    "fits-overprovisioned": "Every switch is at or below 80%, so all packets get through. Not every upgrade was needed: {switches} {wereWas} already within the limit before you changed {itThem}.",
+    "device-port-unsupported": "{switch} cannot serve its {device} devices at full speed: they need {devicePort} ports, but a {class} only has ports up to {maxPort}. Adding uplinks does not change port speed; choose a switch class with faster device ports.",
+    "upgraded-non-bottleneck": "{switch} is still at {util} ({load} of {cap}, {direction}), above the 80% limit. The switch you upgraded was not the bottleneck, so it did not help. Add capacity on {switch}.",
+    "uplinks-maxed-need-class": "{switch} already uses all {max} uplinks of a {class} and is still at {util} ({load} of {cap}, {direction}). More bandwidth needs a different switch class, such as {suggest}.",
+    "undersized-class": "{switch} is now a {class}, but at {util} ({load} of {cap}, {direction}) it is still over 80%. Add uplinks or choose a larger class.",
+    "over-capacity": "{switch} is at {util} ({load} of {cap}, {direction}), above the 80% limit. Add capacity on {switch}.",
+    "no-change": "Choose at least one change before submitting: a different number of uplinks, or (where allowed) a different switch class.",
+    "unknown-switch": "That switch is not part of this network. Choose a switch shown in the topology.",
+    "class-not-allowed": "That switch class cannot be used in this tier. Access switches can be any class; aggregation uses the 25G class.",
+    "uplinks-out-of-range": "That switch class supports at most {max} uplinks. To get more bandwidth, a different switch class is needed.",
+    "upgrade-not-allowed": "This round only lets you change the number of uplinks. Replacing switches comes in a later level."
+  }
+}

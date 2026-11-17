@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Capacity Flows</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Capacity Flows</h1>
+    <p class="tagline">Help Bobby Bits keep the packets flowing.</p>
+    <button type="button" id="restart" class="secondary" hidden>Restart</button>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <!-- Loading / content-error / briefing / summary views render here. -->
+    <section id="view" aria-labelledby="view-heading">
+      <h2 id="view-heading">Loading…</h2>
+      <p>Loading level content.</p>
+    </section>
+
+    <!-- Round view: topology scrolls on its own; actions stay visible. -->
+    <section id="round" aria-labelledby="round-heading" hidden>
+      <h2 id="round-heading">Round</h2>
+      <p id="round-intro"></p>
+      <div class="round-layout">
+        <div>
+          <div id="topology" class="topology" role="region" aria-label="Network topology (scrollable)" tabindex="0"></div>
+          <div id="flow-static"></div>
+        </div>
+        <div class="side">
+          <form id="controls" aria-label="Upgrade choices"></form>
+          <div class="actions" id="actions"></div>
+          <div id="help" class="help" aria-live="polite"></div>
+          <div id="progress" class="progress"></div>
+        </div>
+      </div>
+      <details id="topology-table-wrap" open>
+        <summary>Topology as a table</summary>
+        <div id="topology-table" class="table-wrap" role="region" aria-label="Topology table (scrollable)" tabindex="0"></div>
+      </details>
+    </section>
+
+    <section id="feedback" aria-live="polite" aria-labelledby="feedback-heading" class="feedback" tabindex="-1">
+      <h2 id="feedback-heading" class="visually-hidden">Feedback</h2>
+      <div id="feedback-body"></div>
+    </section>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

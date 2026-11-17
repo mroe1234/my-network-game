@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Capacity Flows Tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1rem 16px; background: #fff; color: #1b1f24; }
+    .pass { color: #1a7f37; } .fail { color: #b42318; font-weight: 600; }
+    li { margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Capacity Flows · tests</h1>
+  <p id="summary" data-status="running">Running…</p>
+  <ul id="failures"></ul>
+  <script type="module">
+    import { run } from './harness.js';
+    const summary = document.getElementById('summary');
+    const list = document.getElementById('failures');
+    try {
+      await import('./rules.test.js');
+      await import('./content.test.js');
+      await import('./state.test.js');
+      const { total, passed, failed } = await run();
+      // Zero discovered tests is a failure (quickstart V1).
+      const ok = total > 0 && failed.length === 0;
+      summary.textContent = `${ok ? 'PASS' : 'FAIL'} · total ${total} · passed ${passed} · failed ${failed.length}` +
+        (total === 0 ? ' · no tests discovered' : '');
+      summary.className = ok ? 'pass' : 'fail';
+      summary.dataset.status = ok ? 'pass' : 'fail';
+      for (const f of failed) {
+        const li = document.createElement('li');
+        li.className = 'fail';
+        li.textContent = `${f.id}: ${f.message}`;
+        list.append(li);
+      }
+    } catch (error) {
+      summary.textContent = `FAIL · runner error: ${error.message}`;
+      summary.className = 'fail';
+      summary.dataset.status = 'fail';
+    }
+  </script>
+</body>
+</html>

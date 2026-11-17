@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.log
+.env*
+.vscode/
+.idea/
+node_modules/
+.claude/scheduled_tasks.lock
